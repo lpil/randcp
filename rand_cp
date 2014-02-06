@@ -11,7 +11,7 @@ class RandCP
     # Filter out ones that don't match the filetypes
     if filetypes
       files.select! do |f|
-        filetypes.any? { |ft| /#{ Regexp.escape ft }/i =~ f }
+        filetypes.any? { |ft| /#{ Regexp.escape ft }$/i =~ f }
       end
     end
     files
