@@ -1,0 +1,21 @@
+#!/usr/bin/ruby
+require 'pry'
+
+class RandCP
+  def initialize
+  end
+
+  def get_files(path = Dir.pwd, filetypes = nil)
+    Dir.chdir(path)
+    files = Dir.glob('**/*').reject { |f| File.directory? f }
+    # Filter out ones that don't match the filetypes
+    if filetypes
+      files.select! do |f|
+        filetypes.any? { |ft| /#{ Regexp.escape ft }/i =~ f }
+      end
+    end
+    files
+  end
+end
+
+binding.pry
