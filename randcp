@@ -1,21 +1,30 @@
 #!/usr/bin/ruby
-require 'pry'
+# encoding: utf-8
+require 'pry' # FIXME
 
+# The business
 class RandCP
   def initialize
+    abort 'randcp [SOURCE] [DEST] [FILETYPES...]' if ARGV.size < 2
+    @source = ARGV.shift
+    @dest = ARGV.shift
+    @filetypes = ARGV
+    abort 'Source directory does not exist' unless File.directory @source
+    abort 'Destination directory does not exist' unless File.directory @dest
   end
+end
 
-  def get_files(path = Dir.pwd, filetypes = nil)
+# Our source or dest dir object
+class FileCollection
+  def initialize(path, filetypes)
     Dir.chdir(path)
     files = Dir.glob('**/*').reject { |f| File.directory? f }
     # Filter out ones that don't match the filetypes
-    if filetypes
+    if filetypes.any?
       files.select! do |f|
         filetypes.any? { |ft| /#{ Regexp.escape ft }$/i =~ f }
       end
     end
-    files
+    @files = files
   end
 end
-
-binding.pry
