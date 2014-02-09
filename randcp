@@ -6,7 +6,7 @@ require 'fileutils'
 # The business
 class RandCP
   def initialize
-    abort 'randcp SOURCE_DIR DEST_DIR [NUM_FILES] [FILETYPES]' if ARGV.size < 2
+    abort 'randcp SOURCEDIR DESTDIR [NUMFILES] [FILETYPES]' if ARGV.size < 2
     @source    = ARGV.shift
     @dest      = ARGV.shift
     @num_files = ARGV.any? ? Integer(ARGV.shift) : 1
@@ -16,11 +16,22 @@ class RandCP
     @source_files = FileCollection.new @source, @filetypes
     @dest_files   = FileCollection.new @dest,   @filetypes
   end
+
+  def cp
+    # Remove files already at dest from list of potential transfers
+    @dest_files.files.each { |f| @source_files.ignore_file f }
+    # Select random files from source and copy to dest
+    @source_files.files.sample(@num_files).each do |f|
+      @dest_files.add_file f
+      @source_files.ignore_file f
+    end
+  end
 end
 
 # Our source or dest dir object
 class FileCollection
   attr_reader :files, :path
+
   def initialize(path, filetypes)
     files = Dir.glob(path + '**/*').reject { |f| File.directory? f }
     # Filter out ones that don't match the filetypes
@@ -44,3 +55,5 @@ class FileCollection
     @files << File.basename(file)
   end
 end
+
+RandCP.new.cp
