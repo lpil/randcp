@@ -20,6 +20,7 @@ class RandCP
   def cp
     # Remove files already at dest from list of potential transfers
     @dest_files.files.each { |f| @source_files.ignore_file f }
+    abort 'No valid files to copy!' if @source_files.files.empty?
     # Select random files from source and copy to dest
     @source_files.files.sample(@num_files).each do |f|
       @dest_files.add_file f
