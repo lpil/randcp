@@ -9,8 +9,8 @@ class RandCP
     @source = ARGV.shift
     @dest = ARGV.shift
     @filetypes = ARGV
-    abort 'Source directory does not exist' unless File.directory @source
-    abort 'Destination directory does not exist' unless File.directory @dest
+    abort 'Source directory does not exist' unless File.directory? @source
+    abort 'Destination directory does not exist' unless File.directory? @dest
   end
 end
 
