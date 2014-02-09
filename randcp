@@ -1,6 +1,7 @@
 #!/usr/bin/ruby
 # encoding: utf-8
 require 'pry' # FIXME
+require 'fileutils'
 
 # The business
 class RandCP
@@ -13,12 +14,13 @@ class RandCP
     abort 'Source directory does not exist'      unless File.directory? @source
     abort 'Destination directory does not exist' unless File.directory? @dest
     @source_files = FileCollection.new @source, @filetypes
+    @dest_files   = FileCollection.new @dest,   @filetypes
   end
 end
 
 # Our source or dest dir object
 class FileCollection
-  attr_reader :files
+  attr_reader :files, :path
   def initialize(path, filetypes)
     files = Dir.glob(path + '**/*').reject { |f| File.directory? f }
     # Filter out ones that don't match the filetypes
@@ -28,10 +30,17 @@ class FileCollection
       end
     end
     @files = files
+    @path  = path
   end
 
   # Removes the file from the list of potential transfers/checks
   def ignore_file(file)
     @files.reject! { |f| (File.basename f) == (File.basename file) }
+  end
+
+  # Adds the file to the dir and the transfer/check file list
+  def add_file(file)
+    FileUtils.cp file, @path, verbose: true
+    @files << File.basename(file)
   end
 end
