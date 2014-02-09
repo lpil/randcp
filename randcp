@@ -1,6 +1,5 @@
 #!/usr/bin/ruby
 # encoding: utf-8
-require 'pry' # FIXME
 require 'fileutils'
 
 # The business
