@@ -5,9 +5,10 @@ require 'pry' # FIXME
 # The business
 class RandCP
   def initialize
-    abort 'randcp [SOURCE] [DEST] [FILETYPES...]' if ARGV.size < 2
-    @source = ARGV.shift
-    @dest = ARGV.shift
+    abort 'randcp SOURCE_DIR DEST_DIR [NUM_FILES] [FILETYPES]' if ARGV.size < 2
+    @source    = ARGV.shift
+    @dest      = ARGV.shift
+    @num_files = ARGV.any? ? Integer(ARGV.shift) : 1
     @filetypes = ARGV
     abort 'Source directory does not exist' unless File.directory? @source
     abort 'Destination directory does not exist' unless File.directory? @dest
