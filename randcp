@@ -10,16 +10,17 @@ class RandCP
     @dest      = ARGV.shift
     @num_files = ARGV.any? ? Integer(ARGV.shift) : 1
     @filetypes = ARGV
-    abort 'Source directory does not exist' unless File.directory? @source
+    abort 'Source directory does not exist'      unless File.directory? @source
     abort 'Destination directory does not exist' unless File.directory? @dest
+    @source_files = FileCollection.new @source, @filetypes
   end
 end
 
 # Our source or dest dir object
 class FileCollection
+  attr_reader :files
   def initialize(path, filetypes)
-    Dir.chdir(path)
-    files = Dir.glob('**/*').reject { |f| File.directory? f }
+    files = Dir.glob(path + '**/*').reject { |f| File.directory? f }
     # Filter out ones that don't match the filetypes
     if filetypes.any?
       files.select! do |f|
@@ -27,5 +28,10 @@ class FileCollection
       end
     end
     @files = files
+  end
+
+  # Removes the file from the list of potential transfers/checks
+  def ignore_file(file)
+    @files.reject! { |f| (File.basename f) == (File.basename file) }
   end
 end
