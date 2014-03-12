@@ -22,7 +22,9 @@ class RandCP
     @dest_files.files.each { |f| @source_files.ignore_file f }
     abort 'No valid files to copy!' if @source_files.files.empty?
     # Select random files from source and copy to dest
-    @source_files.files.sample(@num_files).each do |f|
+    @source_files.files.sample(@num_files).each_with_index do |f, i|
+      puts "#{(i + 1).to_s.rjust(@num_files.to_s.size, '0')}"\
+           " / #{@num_files} | #{File.basename f}"
       @dest_files.add_file f
       @source_files.ignore_file f
     end
@@ -52,9 +54,13 @@ class FileCollection
 
   # Adds the file to the dir and the transfer/check file list
   def add_file(file)
-    FileUtils.cp file, @path, verbose: true
+    FileUtils.cp file, @path
     @files << File.basename(file)
   end
 end
 
-RandCP.new.cp
+begin
+  RandCP.new.cp
+rescue Interrupt, SystemCallError => e
+  puts "\e[31m#{e}\e[0m"
+end
